@@ -110,6 +110,10 @@ select {
   font: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
 article,
 aside,
 details,
