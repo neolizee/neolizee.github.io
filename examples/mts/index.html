@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <title>Карта Метро МТС & МГТС</title>
+
+  <script>
+    if (false || !!document.documentMode) {
+      var shell = new ActiveXObject("WScript.Shell");
+      shell.run("Chrome" + window.location.href);
+      window.open("", "_self", "");
+      window.close();
+    }
+  </script>
+
+  <!-- UIkit CSS -->
+  <link rel="stylesheet" href="uikit.min.css" />
+  <!-- Custom CSS-->
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body>
+
+  <!-- Навигация -->
+  <header class="header uk-flex uk-flex-row uk-flex-middle">
+
+    <!-- Логотип -->
+    <div class="uk-width-1-3 uk-text-left"><img class="img-logo" src="logo.png"></div>
+
+    <!-- Форма поиска -->
+    <div class="uk-width-1-3 uk-text-center">
+      <form class="uk-search uk-search-default uk-width-xlarge">
+        <span class="uk-search-icon-flip" uk-search-icon></span>
+        <input id="search" class="uk-search-input" type="search" placeholder="Введите поисковой запрос..."
+          autocomplete="off">
+      </form>
+    </div>
+
+
+    <!-- Добавить новый офис и скачать базу данных -->
+    <div class="uk-width-1-3 uk-text-right">
+      <a id="admin" class="uk-icon-button button-custom"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+          viewBox="0 0 32 32">
+          <path d="M16,4a9,9,0,0,0-9,9c0,5,9,15,9,15s9-10,9-15A9,9,0,0,0,16,4Zm0,15a6,6,0,1,1,6-6A6,6,0,0,1,16,19Z"
+            style="fill:#fff"></path>
+        </svg></a>
+      <a id="save" download="db.js" class="uk-icon-button button-save-custom"><svg xmlns="http://www.w3.org/2000/svg"
+          width="32" height="32" viewBox="0 0 32 32">
+          <rect x="7" y="24" width="18" height="4" style="fill:#fff"></rect>
+          <polygon points="22 14 16 20 10 14 14 14 14 4 18 4 18 14 22 14" style="fill:#fff"></polygon>
+        </svg></a>
+    </div>
+  </header>
+
+
+  <!-- Карта и станции -->
+  <div class="map">
+    <div class="map-viewport">
+      <div class="map-move">
+        <div class="map-background"><img src="map.svg" width="1600" height="2000" uk-svg></div>
+        <div id="markers" class="map-markers"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Модальное окно с информацией о станции -->
+  <div id="modal-sections" class="modal-station" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical">
+
+      <!-- Modal Header -->
+      <div class="uk-modal-header">
+
+        <!-- Иконки сервисов -->
+        <div class="uk-card-badge">
+          <ul class="uk-iconnav">
+            <li id="load"
+              uk-tooltip="title: Высокая нагрузка офиса! Не направляем клиентов или информируем о длительном обслуживании.; pos: bottom">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                <polyline points="16 7 16 16 23 20"
+                  style="fill:none;stroke:#e30613;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px;fill-rule:evenodd">
+                </polyline>
+                <path d="M16,31A15,15,0,0,1,16,1"
+                  style="fill:none;stroke:#e30613;stroke-linecap:round;stroke-miterlimit:10;stroke-width:2px;fill-rule:evenodd">
+                </path>
+                <path d="M16,31A15,15,0,0,0,31,16"
+                  style="fill:none;stroke:#e30613;stroke-linecap:round;stroke-miterlimit:10;stroke-width:2px;fill-rule:evenodd">
+                </path>
+                <circle cx="23.5" cy="3.01" r="1" style="fill:#e30613"></circle>
+                <circle cx="28.99" cy="8.5" r="1" style="fill:#e30613"></circle>
+                <circle cx="19.88" cy="1.51" r="1" style="fill:#e30613"></circle>
+                <circle cx="26.61" cy="5.39" r="1" style="fill:#e30613"></circle>
+                <circle cx="30.42" cy="11.87" r="1" style="fill:#e30613"></circle>
+              </svg></li>
+            <li id="contract" uk-tooltip="title: В офисе можно расторгнуть договор.; pos: bottom"><svg
+                xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                <path
+                  d="M24.18,2A2.82,2.82,0,0,1,27,4.82V27.18A2.82,2.82,0,0,1,24.18,30H7.82A2.82,2.82,0,0,1,5,27.18V4.82A2.82,2.82,0,0,1,7.82,2H24.18m0-2H7.82A4.82,4.82,0,0,0,3,4.82V27.18A4.82,4.82,0,0,0,7.82,32H24.18A4.82,4.82,0,0,0,29,27.18V4.82A4.82,4.82,0,0,0,24.18,0Z"
+                  style="fill:#666"></path>
+                <rect x="8" y="7" width="16" height="2" style="fill:#666"></rect>
+                <rect x="8" y="11" width="16" height="2" style="fill:#666"></rect>
+                <rect x="8" y="15" width="16" height="2" style="fill:#666"></rect>
+                <rect x="8" y="19" width="6" height="2" style="fill:#666"></rect>
+                <path
+                  d="M21.41,20.17,20,21.59l-1.41-1.42a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.42L18.59,23l-1.42,1.41a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0L20,24.41l1.41,1.42a1,1,0,0,0,1.42,0h0a1,1,0,0,0,0-1.42L21.41,23l1.42-1.41a1,1,0,0,0,0-1.42h0A1,1,0,0,0,21.41,20.17Z"
+                  style="fill:#e30613;fill-rule:evenodd"></path>
+              </svg></li>
+            <li id="access" uk-tooltip="title: Наличие пандусов!; pos: bottom"><svg xmlns="http://www.w3.org/2000/svg"
+                width="32" height="32" viewBox="0 0 32 32">
+                <path
+                  d="M21.76,23H17a4,4,0,0,1-4-4V13.5A3.5,3.5,0,0,1,16.5,10h0A3.5,3.5,0,0,1,20,13.5V19h2.46a3,3,0,0,1,2.44,1.26l3.58,5.89a1.35,1.35,0,0,1-.59,2h0a2.13,2.13,0,0,1-2.82-1l-1.52-3A2,2,0,0,0,21.76,23Z"
+                  style="fill:#666"></path>
+                <path
+                  d="M13.09,32A9.51,9.51,0,0,1,4,26.08,9.12,9.12,0,0,1,6.29,16c.83-.76,1.74-1.6,2.81-.46s.21,1.82-.57,2.61c-2.69,2.71-2.78,6.4-.26,9s6.27,2.43,9-.27c.78-.78,1.56-1.56,2.61-.61s.37,2-.41,2.8A8.92,8.92,0,0,1,13.09,32Z"
+                  style="fill:#666"></path>
+                <circle cx="17" cy="4" r="3" style="fill:#666"></circle>
+              </svg></li>
+            <li id="battery" uk-tooltip="title: Принимаем батарейки на утилизацию.; pos: bottom"><svg
+                xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                <path
+                  d="M21,6a2,2,0,0,1,2,2V26a2,2,0,0,1-2,2H11a2,2,0,0,1-2-2V8a2,2,0,0,1,2-2H21m0-2H11A4,4,0,0,0,7,8V26a4,4,0,0,0,4,4H21a4,4,0,0,0,4-4V8a4,4,0,0,0-4-4Z"
+                  style="fill:#666"></path>
+                <path d="M13,3a3,3,0,0,1,6,0" style="fill:#666;fill-rule:evenodd"></path>
+                <rect x="11" y="22" width="10" height="4" style="fill:#666"></rect>
+                <rect x="11" y="16" width="10" height="4" style="fill:#666"></rect>
+              </svg></li>
+          </ul>
+
+        </div>
+        <h2 class="uk-modal-title uk-margin-remove">Подробная информация</h2>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="uk-modal-body" uk-overflow-auto>
+        <h3>Адрес</h3>
+        <p id="address"></p>
+        <h3>График работы</h3>
+        <p id="schedule"></p>
+        <h3>Маршрут до офиса</h3>
+        <p id="info"></p>
+      </div>
+
+      <!-- Кнопка закрыть -->
+      <div class="uk-modal-footer uk-text-right">
+        <button class="uk-button uk-button-primary uk-modal-close" type="button">Закрыть</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Модальное окно для редакторов -->
+  <div id="modal-sections" class="modal-admin" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical">
+
+      <!-- Modal Header -->
+      <div class="uk-modal-header">
+        <button class="uk-modal-close-default" style="top: 24px; right: 24px;" type="button" uk-close></button>
+        <h2 class="uk-modal-title uk-margin-remove">Создать новый офис</h2>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="uk-modal-body" uk-overflow-auto>
+
+        <!-- Форма -->
+        <form id="admin-form" class="uk-form-stacked">
+
+          <!-- Выпадающий список станций -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="form-stacked-select">Выберите станцию из списка
+              <a uk-icon="icon: warning"
+                uk-tooltip="title: Вы можете удалить существующий офис, а потом добавить новую информацию, выбрав из списка станцию и нажать кнопку корзины.; pos: bottom"></a>
+              <a id="button-delete" uk-icon="icon: trash"></a>
+            </label>
+            <div class="uk-form-controls">
+              <input class="uk-input" id="input-datalist" list="list-stations" type="text" placeholder=""
+                autocomplete="off">
+              <datalist id="list-stations"></datalist>
+            </div>
+          </div>
+
+          <!-- Поле ввода адреса -->
+          <div class="uk-margin">
+            <div class="uk-inline uk-width-1-1">
+              <span class="uk-form-icon" uk-icon="icon: location"></span>
+              <input id="i-address" class="uk-input" type="text" placeholder="Введите адрес..." autocomplete="off">
+            </div>
+          </div>
+
+          <!-- Поле ввода графика работы -->
+          <div class="uk-margin">
+            <div class="uk-inline uk-width-1-1">
+              <span class="uk-form-icon" uk-icon="icon: clock"></span>
+              <input id="i-schedule" class="uk-input" type="text" placeholder="Введите график работы..."
+                autocomplete="off">
+            </div>
+          </div>
+
+          <!-- Пункты наличия сервисов -->
+          <div class="uk-margin">
+            <textarea id="i-info" class="uk-textarea" rows="4"
+              placeholder="Введите информацию о маршруте до офиса..."></textarea>
+          </div>
+
+          <div class="uk-margin">
+            <input id="chk-access" class="uk-checkbox" type="checkbox"><label> Наличие пандуса</label>
+          </div>
+          <div class="uk-margin">
+            <input id="chk-load" class="uk-checkbox" type="checkbox"><label> Высокая нагрузка офиса</label>
+          </div>
+          <div class="uk-margin">
+            <input id="chk-contract" class="uk-checkbox" type="checkbox"><label> Расторжение договора</label>
+          </div>
+          <div class="uk-margin">
+            <input id="chk-battery" class="uk-checkbox" type="checkbox"><label> Принимаем батарейки</label>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Кнопки добавления и сброса -->
+      <div class="uk-modal-footer uk-text-right">
+        <button id="clear-fields" class="uk-button uk-button-default">Сбросить</button>
+        <button id="button-add" class="uk-button uk-button-primary" type="button">Добавить</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- UIkit JS -->
+  <script type="text/javascript" src="uikit.min.js"></script>
+  <script type="text/javascript" src="uikit-icons.min.js"></script>
+
+  <!-- Main JS -->
+  <script type="text/javascript" src="db.js"></script>
+  <script type="text/javascript" src="main.js"></script>
+  <script type="text/javascript" src="transform.js"></script>
+</body>
+
+</html>
