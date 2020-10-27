@@ -21,7 +21,6 @@ function showStations() {
 
 // Быстрый поиск станций по карте
 let input_search = document.querySelector("#search");
-
 input_search.addEventListener("input", (e) => {
     let links = Array.prototype.slice.call(document.querySelectorAll(".name"));
     let input_value = e.target.value.trim();
