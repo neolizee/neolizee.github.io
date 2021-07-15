@@ -63,3 +63,46 @@ function fastSearch(inputId, contentClass) {
         }
     });
 }
+
+/* Парсинг сайта Proxy CORS */
+fetch("https://cors-anywhere.herokuapp.com/https://delonghi.ru/product/528")
+  .then(function (response) {
+    return response.text();
+  })
+  .then(function (html) {
+    var parser = new DOMParser();
+    var data = parser.parseFromString(html, "text/html");
+    var price = data.querySelector(".price").innerHTML.replace(/[^0-9\s]/gi, '').replace(/\s/g, '');
+    console.log(price);
+  })
+  .catch(function (err) {
+    console.warn("Внимание! Нет доступа - ", err);
+  });
+
+const url = "https://opendata.mkrf.ru/v2";
+
+const options = {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    "X-API-KEY":
+      "2eab170305422727794e31093297e42365464f47d5927a38ee7f9815598e5032",
+    //Authorization: "2eab170305422727794e31093297e42365464f47d5927a38ee7f9815598e5032"
+  },
+  mode: "cors",
+};
+
+fetch(url, options)
+  .then(function (response) {
+    if (response.ok) {
+      return response.json();
+    } else {
+      console.log(response.status + " " + response.statusText);
+    }
+  })
+  .then(function (data) {
+    console.log(data);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
